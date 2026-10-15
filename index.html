@@ -1,0 +1,555 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<title>Gerador de Assinatura – Fontana Partners</title>
+<!-- Cropper.js -->
+<link rel="stylesheet" href="https://unpkg.com/cropperjs@1.6.2/dist/cropper.min.css" />
+<script src="https://unpkg.com/cropperjs@1.6.2/dist/cropper.min.js"></script>
+
+<!-- html-to-image -->
+<script src="https://unpkg.com/html-to-image@1.11.11/dist/html-to-image.js"></script>
+
+<style>
+:root {
+  --verde: #1A3C34;
+  --marrom: #8C5A3C;
+  --cinza: #f5f5f5;
+  --ph: #bfbfbf;
+}
+
+body {
+  font-family: Arial;
+  background: var(--cinza);
+  margin: 0;
+  padding: 0;
+}
+
+.page {
+  min-height: 100vh;
+  padding: 20px;
+  display: flex;
+  justify-content: center;
+}
+
+.container {
+  width: 100%;
+  max-width: 1400px;
+  background: #fff;
+  padding: 30px;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+h1 {
+  margin: 0;
+  color: var(--verde);
+  font-size: 30px;
+  font-weight: bold;
+}
+
+.info-box {
+  background: #f0f0f0;
+  border-left: 5px solid var(--verde);
+  padding: 15px 20px;
+  border-radius: 6px;
+  margin-top: 15px;
+}
+
+h2 {
+  margin: 0;
+  color: var(--verde);
+  font-size: 20px;
+}
+
+h3 {
+  margin: 5px 0 0;
+  color: #555;
+  font-size: 15px;
+}
+
+.layout {
+  display: flex;
+  gap: 40px;
+  flex-wrap: wrap;
+  margin-top: 30px;
+}
+
+.form-col {
+  flex: 0 0 320px;
+}
+
+.preview-col {
+  flex: 1;
+}
+
+.form-group {
+  margin-bottom: 12px;
+}
+
+label {
+  font-weight: bold;
+  color: var(--verde);
+}
+
+input {
+  width: 100%;
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+button {
+  margin-top: 15px;
+  padding: 10px 18px;
+  border: none;
+  border-radius: 4px;
+  background: var(--verde);
+  color: #fff;
+  font-weight: bold;
+  cursor: pointer;
+  margin-right: 10px;
+}
+
+button:hover {
+  background: #145027;
+}
+
+.btn-secondary { background: var(--marrom); }
+.btn-light { background: #444; }
+
+.email-preview {
+  width: 100%;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  background: #fff;
+}
+
+.email-header {
+  background: #f0f0f0;
+  padding: 12px 18px;
+  border-bottom: 1px solid #ddd;
+  font-size: 14px;
+}
+
+.email-body {
+  padding: 25px;
+}
+
+.placeholder {
+  color: var(--ph) !important;
+}
+
+/* MODAL */
+#cropperModal {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  box-sizing: border-box;
+  padding: 16px;
+  background: rgba(0,0,0,0.75);
+  display: none;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+}
+
+#cropperBox {
+  background: #fff;
+  padding: 16px;
+  border-radius: 12px;
+  width: min(92%, 520px);
+  max-height: 88vh;
+  overflow: auto;
+  box-sizing: border-box;
+}
+
+#cropperImage {
+  max-width: 100%;
+  max-height: 55vh;
+  width: auto;
+  height: auto;
+  display: block;
+  margin: 0 auto;
+}
+
+/* CÍRCULO DE RECORTE */
+.cropper-view-box,
+.cropper-face {
+  border-radius: 50% !important;
+  border: 3px solid var(--verde) !important;
+  box-shadow: 0 0 0 9999px rgba(0,0,0,0.6) !important;
+}
+
+.cropper-line,
+.cropper-point {
+  background: transparent !important;
+}
+
+.cropper-buttons {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 15px;
+}
+</style>
+</head>
+
+<body>
+
+<div class="page">
+<div class="container">
+
+<h1>Gerador de Assinatura de Email – Fontana Partners</h1>
+
+<div class="info-box">
+  <h2>Gere sua assinatura para o e-mail @fontanapartners.com.br</h2>
+  <h3>Preencha suas informações, insira uma foto e salve a assinatura para uso no Outlook.</h3>
+</div>
+
+<div class="layout">
+
+<!-- FORMULÁRIO -->
+<div class="form-col">
+
+  <div class="form-group">
+    <label>Nome</label>
+    <input id="nome" />
+  </div>
+
+  <div class="form-group">
+    <label>Posição / Cargo</label>
+    <input id="cargo" />
+  </div>
+
+  <div class="form-group">
+    <label>Email</label>
+    <input id="email" />
+  </div>
+
+  <div class="form-group">
+    <label>Telefone</label>
+    <input id="telefone" />
+  </div>
+
+  <div class="form-group">
+    <label>Foto</label>
+    <input id="fotoUpload" type="file" accept="image/*" />
+  </div>
+
+  <button id="copySignature" class="btn-light">Copiar assinatura</button>
+  <button id="reset" class="btn-secondary">Resetar</button>
+
+</div>
+
+<!-- PRÉ-VISUALIZAÇÃO -->
+<div class="preview-col">
+
+  <div class="email-preview">
+
+    <div class="email-header">
+      <div><b>Para:</b> Destinatário</div>
+      <div><b>Assunto:</b> Nova assinatura Fontana Partners</div>
+    </div>
+
+    <div class="email-body">
+
+      <div id="signature" style="width:520px; max-width:520px; box-sizing:border-box; background:#ffffff; padding:4px; font-family:Arial,sans-serif;">
+
+        <table width="520" cellpadding="0" cellspacing="0" border="0" style="width:520px; border-collapse:collapse;">
+          <tr>
+            <td>
+
+              <table width="520" cellpadding="0" cellspacing="0" border="0" style="width:520px; border-collapse:collapse;">
+                <tr>
+
+                  <!-- COLUNA ESQUERDA -->
+                  <td style="width:245px; padding-right:10px;">
+                    <table>
+                      <tr>
+                        <td style="padding-right:8px;">
+                          <img id="foto"
+                               src="https://via.placeholder.com/60"
+                               style="width:48px; height:48px; border-radius:50%; border:2px solid #1A3C34; object-fit:cover; display:block;" />
+                        </td>
+
+                        <td>
+                          <div id="nomePreview"
+                               class="placeholder"
+                               style="font-size:16px; line-height:20px; font-weight:bold; color:#1A3C34;">
+                            Nome
+                          </div>
+
+                          <div id="cargoPreview"
+                               class="placeholder"
+                               style="font-size:12px; line-height:16px; font-weight:bold; color:#8C5A3C;">
+                            Posição
+                          </div>
+                        </td>
+                      </tr>
+                    </table>
+                  </td>
+
+                  <!-- BARRA VERTICAL -->
+                  <td style="width:12px; text-align:center;">
+                    <div style="width:2px; height:42px; background:#1A3C34;"></div>
+                  </td>
+
+                  <!-- COLUNA DIREITA -->
+                  <td style="width:245px; padding-left:10px;">
+                    <div style="font-size:12px; line-height:18px; color:#333333;">
+                      <span id="emailPreview" class="placeholder">email@fontanapartners.com.br</span><br>
+                      <span id="telefonePreview" class="placeholder">(11) 99999-9999</span>
+                    </div>
+                  </td>
+
+                </tr>
+              </table>
+
+            </td>
+          </tr>
+
+          <!-- BARRA HORIZONTAL -->
+          <tr>
+            <td style="padding:7px 0 5px;">
+              <div style="height:3px; background:#1A3C34;"></div>
+            </td>
+          </tr>
+
+          <!-- LOGO -->
+          <tr>
+            <td style="text-align:center; padding-top:5px;">
+              <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAlgAAAB4CAYAAAAuVYzDAAAQAElEQVR4AexdB2AURRee2XL9Lr0SehVpEqRIC9KkF+m9S1FBERADyo+oICgCgihFOkKUXgQRUUSwAIrSe0tCeq7fbfvfHgRTLsldcgmos5m53Z15bb6ZnXk7s7uhENkIAgQBggBBgCBAECAIEAR8igBxsHwKJxFGECAIEAQIAr5BgEghCPyzESAO1j+7/oj1BAGCAEGAIEAQIAg8hggQB+sxrBRiEkHAFwgQGQQBggBBgCDw6BAgDtajw55oJggQBAgCBAGCAEHgX4oAcbDyrViSQRAgCBAECAIEAYIAQaBoCBAHq2i4ES6CAEGAIEAQIAg8GgSI1n8EAsTB+kdUEzGSIEAQIAgQBAgCBIF/EgLEwfon1RaxlSBAEPAFAkQGQYAgQBAocQSIg1XiEBMFBAGCAEGAIEAQBDwGAHiYHkMFSEkCBAEfIEAkUEQIAgQBP4LCBAH679Qy6SMBAGCAEGAIEAQIAiUKgLEwSpVuH2hjMggCBAECAIEAYIAQeBxR4A4WI97DRH7CAIEAYIAQYAg8E9AgNiYAwHiYOWAg5wQBAgCBAGCAEGAIEAQKD4CxMEqPoZEAkGAIEAQ8AUCRAZBgCDwL0KAOFj/osokRSEIEAQIAgQBggBB4PFAgDhYj0c9ECt8gQCRQRAgCBAECAIEgccEAeJgPSYVQcwgCBAECAIEAYIAQeDfg0B2B+vfUypSEoIAQYAgQBAgCBAECAKPEAHiYD1C8IlqggBBgCBAEPAEAUJDEPjnIUAcrH9enRGLCQIEAYIAQYAgQBB4zBEgDtZjXkHEPIKALxAgMggCBAGCAEGgdBH4PwAAAP//ocj15gAAAAZJREFUAwB5yuKFzfdxLwAAAABJRU5ErkJggg==" 
+                   style="width:150px; height:auto; display:block; margin:0 auto;" />
+            </td>
+          </tr>
+
+        </table>
+
+      </div>
+
+    </div>
+
+  </div>
+
+</div>
+
+</div>
+</div>
+
+<!-- MODAL DE RECORTE -->
+<div id="cropperModal">
+  <div id="cropperBox">
+    <img id="cropperImage" />
+    <div class="cropper-buttons">
+      <button id="cancelCrop" class="btn-light">Cancelar</button>
+      <button id="applyCrop" class="btn-secondary">Aplicar recorte</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const nomeInput = document.getElementById("nome");
+const cargoInput = document.getElementById("cargo");
+const emailInput = document.getElementById("email");
+const telefoneInput = document.getElementById("telefone");
+const fotoUpload = document.getElementById("fotoUpload");
+
+const nomePreview = document.getElementById("nomePreview");
+const cargoPreview = document.getElementById("cargoPreview");
+const emailPreview = document.getElementById("emailPreview");
+const telefonePreview = document.getElementById("telefonePreview");
+const fotoImg = document.getElementById("foto");
+const cropperImage = document.getElementById("cropperImage");
+const cropperModal = document.getElementById("cropperModal");
+
+let cropper = null;
+let fotoAnterior = fotoImg.src;
+
+function updatePlaceholder(el, value, placeholder) {
+  if (!value.trim()) {
+    el.textContent = placeholder;
+    el.classList.add("placeholder");
+  } else {
+    el.textContent = value;
+    el.classList.remove("placeholder");
+  }
+}
+
+function fecharRecorte() {
+  if (cropper) {
+    cropper.destroy();
+    cropper = null;
+  }
+  cropperModal.style.display = "none";
+  cropperImage.removeAttribute("src");
+  fotoUpload.value = "";
+}
+
+nomeInput.addEventListener("input", () => {
+  updatePlaceholder(nomePreview, nomeInput.value, "Nome");
+});
+
+cargoInput.addEventListener("input", () => {
+  updatePlaceholder(cargoPreview, cargoInput.value, "Posição");
+});
+
+emailInput.addEventListener("input", () => {
+  updatePlaceholder(emailPreview, emailInput.value, "email@fontanapartners.com.br");
+});
+
+telefoneInput.addEventListener("input", () => {
+  let v = telefoneInput.value.replace(/\D/g, "").slice(0, 11);
+  if (v.length <= 10) {
+    telefoneInput.value = v.length > 2
+      ? v.replace(/(\d{2})(\d{1,4})(\d{0,4})/, "($1) $2-$3").replace(/-$/, "")
+      : v ? "(" + v : "";
+  } else {
+    telefoneInput.value = v.replace(/(\d{2})(\d{5})(\d{0,4})/, "($1) $2-$3").replace(/-$/, "");
+  }
+  updatePlaceholder(telefonePreview, telefoneInput.value, "(11) 99999-9999");
+});
+
+fotoUpload.addEventListener("change", function () {
+  const file = this.files && this.files[0];
+  if (!file) return;
+
+  if (!file.type.startsWith("image/")) {
+    alert("Selecione um arquivo de imagem válido.");
+    this.value = "";
+    return;
+  }
+
+  if (cropper) {
+    cropper.destroy();
+    cropper = null;
+  }
+
+  const reader = new FileReader();
+  reader.onerror = () => {
+    alert("Não foi possível abrir essa imagem. Tente outro arquivo.");
+    fotoUpload.value = "";
+  };
+
+  reader.onload = function (e) {
+    cropperImage.onload = function () {
+      cropperModal.style.display = "flex";
+
+      // Espera o modal ficar visível para o Cropper calcular corretamente a área de recorte.
+      requestAnimationFrame(() => {
+        if (cropper) {
+          cropper.destroy();
+          cropper = null;
+        }
+
+        cropper = new Cropper(cropperImage, {
+          aspectRatio: 1,
+          viewMode: 1,
+          dragMode: "move",
+          background: false,
+          guides: true,
+          center: true,
+          highlight: true,
+          autoCrop: true,
+          autoCropArea: 0.8,
+          movable: true,
+          zoomable: true,
+          cropBoxMovable: true,
+          cropBoxResizable: true,
+          responsive: true,
+          ready() {
+            const box = this.cropper.getCropBoxData();
+            const size = Math.min(box.width, box.height);
+            this.cropper.setCropBoxData({
+              left: box.left + (box.width - size) / 2,
+              top: box.top + (box.height - size) / 2,
+              width: size,
+              height: size
+            });
+          }
+        });
+      });
+    };
+    cropperImage.src = e.target.result;
+  };
+
+  reader.readAsDataURL(file);
+});
+
+document.getElementById("cancelCrop").addEventListener("click", function (event) {
+  event.preventDefault();
+  fecharRecorte();
+});
+
+document.getElementById("applyCrop").addEventListener("click", function (event) {
+  event.preventDefault();
+
+  if (!cropper) {
+    alert("A imagem ainda está sendo preparada. Aguarde um instante e tente novamente.");
+    return;
+  }
+
+  try {
+    const canvas = cropper.getCroppedCanvas({
+      width: 300,
+      height: 300,
+      imageSmoothingEnabled: true,
+      imageSmoothingQuality: "high"
+    });
+
+    if (!canvas) {
+      alert("Não foi possível recortar essa imagem. Tente selecionar outra.");
+      return;
+    }
+
+    fotoImg.src = canvas.toDataURL("image/png");
+    fecharRecorte();
+  } catch (error) {
+    console.error("Erro ao aplicar o recorte:", error);
+    alert("Não foi possível salvar o recorte. Tente outra imagem.");
+  }
+});
+
+document.getElementById("copySignature").addEventListener("click", async function (event) {
+  event.preventDefault();
+  try {
+    const canvas = await htmlToImage.toCanvas(document.getElementById("signature"));
+    if (navigator.clipboard && window.ClipboardItem && window.isSecureContext) {
+      const blob = await new Promise(resolve => canvas.toBlob(resolve, "image/png"));
+      await navigator.clipboard.write([new ClipboardItem({ "image/png": blob })]);
+      alert("Assinatura copiada como imagem.");
+    } else {
+      alert("Seu navegador não permite copiar imagens diretamente. Abra o gerador no Chrome ou Edge atualizado e tente novamente.");
+    }
+  } catch (error) {
+    console.error("Erro ao copiar assinatura:", error);
+    alert("Não foi possível copiar a assinatura. Verifique a permissão de área de transferência do navegador e tente novamente.");
+  }
+});
+
+document.getElementById("reset").addEventListener("click", function (event) {
+  event.preventDefault();
+  nomeInput.value = "";
+  cargoInput.value = "";
+  emailInput.value = "";
+  telefoneInput.value = "";
+  fotoUpload.value = "";
+
+  fecharRecorte();
+  fotoImg.src = "https://via.placeholder.com/60";
+
+  updatePlaceholder(nomePreview, "", "Nome");
+  updatePlaceholder(cargoPreview, "", "Posição");
+  updatePlaceholder(emailPreview, "", "email@fontanapartners.com.br");
+  updatePlaceholder(telefonePreview, "", "(11) 99999-9999");
+});
+
+updatePlaceholder(nomePreview, "", "Nome");
+updatePlaceholder(cargoPreview, "", "Posição");
+updatePlaceholder(emailPreview, "", "email@fontanapartners.com.br");
+updatePlaceholder(telefonePreview, "", "(11) 99999-9999");
+</script>
+
+</body>
+</html>
