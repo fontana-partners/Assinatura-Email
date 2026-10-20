@@ -2,7 +2,13 @@
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8" />
-<title>Gerador de Assinatura – Fontana Partners</title>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Gerar Assinatura – Fontana</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&family=Cormorant+Garamond:wght@500;600&display=swap" />
+
 <!-- Cropper.js -->
 <link rel="stylesheet" href="https://unpkg.com/cropperjs@1.6.2/dist/cropper.min.css" />
 <script src="https://unpkg.com/cropperjs@1.6.2/dist/cropper.min.js"></script>
@@ -12,178 +18,245 @@
 
 <style>
 :root {
-  --verde: #1A3C34;
-  --marrom: #8C5A3C;
-  --cinza: #f5f5f5;
+  --verde: #1F4741;
+  --verde-escuro: #173A35;
+  --verde-borda: #3E6660;
+  --verde-tracejado: #5E847E;
+  --dourado: #C9A469;
+  --dourado-claro: #E2C48F;
+  --fundo: #F4F1EA;
+  --texto: #1F2A28;
+  --texto-suave: #6B6F6A;
   --ph: #bfbfbf;
 }
 
+* { box-sizing: border-box; }
+
 body {
-  font-family: Arial;
-  background: var(--cinza);
   margin: 0;
-  padding: 0;
+  font-family: Manrope, Arial, sans-serif;
+  background: var(--fundo);
+  color: var(--texto);
 }
 
-.page {
+.app {
   min-height: 100vh;
-  padding: 20px;
   display: flex;
-  justify-content: center;
+  flex-wrap: wrap;
 }
 
-.container {
+/* ===== PAINEL LATERAL ===== */
+.painel {
+  flex: 0 0 440px;
+  max-width: 100%;
+  background: var(--verde);
+  color: #fff;
+  padding: 48px 48px 40px;
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+}
+
+.eyebrow {
+  font-size: 12px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--dourado);
+  font-weight: 700;
+}
+
+.painel h1 {
+  margin: 0;
+  font-family: "Cormorant Garamond", Georgia, serif;
+  font-weight: 600;
+  font-size: 40px;
+  line-height: 1.05;
+}
+
+.painel .subtitulo {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.55;
+  color: #C8D6D2;
+}
+
+.cabecalho { display: flex; flex-direction: column; gap: 10px; }
+
+.form { display: flex; flex-direction: column; gap: 16px; }
+
+.form-row {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.form-group { display: flex; flex-direction: column; gap: 6px; min-width: 0; }
+
+.form-group > label,
+.form-group > .rotulo {
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--dourado);
+}
+
+.painel input,
+.painel select {
+  height: 44px;
   width: 100%;
-  max-width: 1400px;
-  background: #fff;
-  padding: 30px;
-  border-radius: 12px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-}
-
-h1 {
-  margin: 0;
-  color: var(--verde);
-  font-size: 30px;
-  font-weight: bold;
-}
-
-.info-box {
-  background: #f0f0f0;
-  border-left: 5px solid var(--verde);
-  padding: 15px 20px;
-  border-radius: 6px;
-  margin-top: 15px;
-}
-
-h2 {
-  margin: 0;
-  color: var(--verde);
-  font-size: 20px;
-}
-
-h3 {
-  margin: 5px 0 0;
-  color: #555;
+  border-radius: 8px;
+  border: 1px solid var(--verde-borda);
+  background: var(--verde-escuro);
+  color: #fff;
+  padding: 0 14px;
+  font: inherit;
   font-size: 15px;
 }
 
-.layout {
-  display: flex;
-  gap: 40px;
-  flex-wrap: wrap;
-  margin-top: 30px;
+.painel input::placeholder { color: #7FA09A; }
+
+.painel input:focus,
+.painel select:focus {
+  outline: none;
+  border-color: var(--dourado);
+  box-shadow: 0 0 0 3px rgba(201, 164, 105, 0.25);
 }
 
-.form-col {
-  flex: 0 0 320px;
-}
+/* Campo de foto */
+#fotoUpload { display: none; }
 
-.preview-col {
-  flex: 1;
-}
-
-.form-group {
-  margin-bottom: 12px;
-}
-
-label {
-  font-weight: bold;
-  color: #1F4741;
-}
-
-input, select {
-  width: 100%;
-  box-sizing: border-box;
-  font-family: Arial;
+.form-group > label.foto-drop {
+  min-height: 56px;
+  border-radius: 8px;
+  border: 1px dashed var(--verde-tracejado);
+  color: #E6EDEB;
   font-size: 14px;
-  background: #fff;
-  padding: 8px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-}
-
-button {
-  margin-top: 15px;
-  padding: 10px 18px;
-  border: none;
-  border-radius: 4px;
-  background: #1F4741;
-  color: #fff;
-  font-weight: bold;
-  cursor: pointer;
-  margin-right: 10px;
-}
-
-button:hover { background: #163631; }
-
-.btn-secondary { background: #C9A469; }
-.btn-secondary:hover { background: #B38F55; }
-.btn-light { background: #1F4741; }
-.btn-light:hover { background: #163631; }
-
-/* Campo de foto personalizado */
-.file-field {
   display: flex;
   align-items: center;
+  justify-content: center;
   gap: 10px;
-  margin-top: 4px;
-}
-
-.file-field input[type="file"] { display: none; }
-
-.file-btn {
-  display: inline-block;
   padding: 8px 14px;
-  border-radius: 4px;
-  background: #1F4741;
-  color: #fff !important;
-  font-weight: bold;
-  font-size: 14px;
   cursor: pointer;
+  text-transform: none;
+  letter-spacing: 0;
+  font-weight: 500;
+  font-size: 14px;
+  color: #E6EDEB;
 }
 
-.file-btn:hover { background: #163631; }
+.form-group > label.foto-drop:hover { border-color: var(--dourado); }
 
 .file-name {
   font-size: 13px;
-  color: #555;
+  color: #C8D6D2;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
-.email-preview {
-  width: 100%;
-  border: 1px solid #ddd;
+.file-name:empty { display: none; }
+
+/* Botões */
+.acoes { margin-top: auto; display: flex; gap: 12px; }
+
+button {
+  height: 48px;
   border-radius: 8px;
+  font: inherit;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  padding: 0 20px;
+}
+
+.btn-primario {
+  flex: 1;
+  border: none;
+  background: var(--dourado);
+  color: #13302B;
+}
+
+.btn-primario:hover { background: var(--dourado-claro); }
+
+.btn-contorno {
+  border: 1px solid var(--verde-tracejado);
+  background: transparent;
+  color: #fff;
+  font-weight: 600;
+}
+
+.btn-contorno:hover { border-color: #fff; }
+
+/* ===== PRÉ-VISUALIZAÇÃO ===== */
+.preview {
+  flex: 999 1 560px;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 20px;
+  padding: 48px 24px;
+}
+
+.preview-inner { width: 100%; max-width: 720px; display: flex; flex-direction: column; gap: 20px; }
+
+.preview-titulo {
+  font-size: 12px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--texto-suave);
+  font-weight: 700;
+}
+
+.janela {
   background: #fff;
+  border-radius: 14px;
+  box-shadow: 0 1px 2px rgba(20,40,36,0.06), 0 12px 32px rgba(20,40,36,0.08);
+  overflow: hidden;
 }
 
-.email-header {
-  background: #f0f0f0;
-  padding: 12px 18px;
-  border-bottom: 1px solid #ddd;
+.janela-barra {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 14px 20px;
+  border-bottom: 1px solid #ECE8DF;
+}
+
+.janela-barra .ponto { width: 10px; height: 10px; border-radius: 50%; background: #E3DED3; }
+.janela-barra .titulo { margin-left: 12px; font-size: 13px; color: var(--texto-suave); }
+
+.janela-campos {
+  padding: 20px 28px 8px;
+  font-size: 13px;
+  color: var(--texto-suave);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.janela-campos div { border-bottom: 1px solid #F1EEE7; padding-bottom: 8px; }
+.janela-campos b { color: var(--texto); }
+
+.janela-corpo {
+  padding: 24px 28px 8px;
   font-size: 14px;
+  color: #4A4F4B;
+  line-height: 1.6;
 }
 
-.email-body {
-  padding: 25px;
-}
+.janela-assinatura { padding: 12px 28px 36px; overflow-x: auto; }
 
-.placeholder {
-  color: var(--ph) !important;
-}
+.placeholder { color: var(--ph) !important; }
 
-/* MODAL */
+/* ===== MODAL DE RECORTE ===== */
 #cropperModal {
   position: fixed;
   inset: 0;
-  width: 100%;
-  height: 100%;
-  box-sizing: border-box;
   padding: 16px;
-  background: rgba(0,0,0,0.75);
+  background: rgba(10, 25, 22, 0.75);
   display: none;
   justify-content: center;
   align-items: center;
@@ -192,12 +265,11 @@ button:hover { background: #163631; }
 
 #cropperBox {
   background: #fff;
-  padding: 16px;
-  border-radius: 12px;
+  padding: 20px;
+  border-radius: 14px;
   width: min(92%, 520px);
   max-height: 88vh;
   overflow: auto;
-  box-sizing: border-box;
 }
 
 #cropperImage {
@@ -209,7 +281,8 @@ button:hover { background: #163631; }
   margin: 0 auto;
 }
 
-/* CÍRCULO DE RECORTE */
+.cropper-container { overflow: hidden; }
+
 .cropper-view-box,
 .cropper-face {
   border-radius: 50% !important;
@@ -218,89 +291,112 @@ button:hover { background: #163631; }
 }
 
 .cropper-line,
-.cropper-point {
-  background: transparent !important;
-}
+.cropper-point { background: transparent !important; }
 
 .cropper-buttons {
   display: flex;
   justify-content: flex-end;
   gap: 10px;
-  margin-top: 15px;
+  margin-top: 16px;
+}
+
+.cropper-buttons .btn-light {
+  border: 1px solid #D6DAD7;
+  background: #fff;
+  color: var(--verde);
+}
+
+.cropper-buttons .btn-secondary {
+  border: none;
+  background: var(--verde);
+  color: #fff;
+}
+
+/* ===== CELULAR ===== */
+@media (max-width: 560px) {
+  .painel { flex-basis: 100%; padding: 32px 20px; }
+  .form-row { grid-template-columns: 1fr; }
+  .preview { padding: 32px 16px; }
 }
 </style>
 </head>
 
 <body>
 
-<div class="page">
-<div class="container">
+<div class="app">
 
-<h1>Gerador de Assinatura de Email – Fontana Partners</h1>
-
-<div class="info-box">
-  <h2>Preencha as informações, insira sua foto e gere a assinatura para o e-mail Fontana.</h2>
-</div>
-
-<div class="layout">
-
-<!-- FORMULÁRIO -->
-<div class="form-col">
-
-  <div class="form-group">
-    <label>Empresa</label>
-    <select id="empresa">
-      <option value="partners">Fontana Partners</option>
-      <option value="wealth">Fontana Wealth</option>
-      <option value="capital">Fontana Capital</option>
-    </select>
-  </div>
-
-  <div class="form-group">
-    <label>Nome</label>
-    <input id="nome" />
-  </div>
-
-  <div class="form-group">
-    <label>Posição / Cargo</label>
-    <input id="cargo" />
-  </div>
-
-  <div class="form-group">
-    <label>Email</label>
-    <input id="email" />
-  </div>
-
-  <div class="form-group">
-    <label>Telefone</label>
-    <input id="telefone" />
-  </div>
-
-  <div class="form-group">
-    <label>Foto</label>
-    <div class="file-field">
-      <label for="fotoUpload" class="file-btn">Selecionar Arquivo</label>
-      <span id="fotoNome" class="file-name"></span>
-      <input id="fotoUpload" type="file" accept="image/*" />
-    </div>
-  </div>
-
-  <button id="copySignature" class="btn-light">Copiar Assinatura</button>
-  <button id="reset" class="btn-secondary">Resetar</button>
-
-</div>
-
-<!-- PRÉ-VISUALIZAÇÃO -->
-<div class="preview-col">
-
-  <div class="email-preview">
-
-    <div class="email-header">
-      <div><b>Para:</b> Destinatário</div>
-      <div><b>Assunto:</b> Nova assinatura Fontana Partners</div>
+  <!-- PAINEL LATERAL / FORMULÁRIO -->
+  <aside class="painel">
+    <div class="cabecalho">
+      <div class="eyebrow">Fontana · Assinatura de e-mail</div>
+      <h1>Gerar Assinatura</h1>
+      <p class="subtitulo">Preencha as informações, insira sua foto, gere a assinatura e configure para uso no Outlook.</p>
     </div>
 
-    <div class="email-body">
+    <div class="form">
+      <div class="form-group">
+        <label for="empresa">Empresa</label>
+        <select id="empresa">
+          <option value="partners">Fontana Partners</option>
+          <option value="wealth">Fontana Wealth</option>
+          <option value="capital">Fontana Capital</option>
+        </select>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label for="nome">Nome</label>
+          <input id="nome" placeholder="Seu nome" />
+        </div>
+        <div class="form-group">
+          <label for="cargo">Cargo</label>
+          <input id="cargo" placeholder="Seu cargo" />
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="email">E-mail</label>
+        <input id="email" type="email" placeholder="nome@fontanapartners.com.br" />
+      </div>
+
+      <div class="form-group">
+        <label for="telefone">Telefone</label>
+        <input id="telefone" inputmode="tel" placeholder="(11) 99999-9999" />
+      </div>
+
+      <div class="form-group">
+        <span class="rotulo">Foto</span>
+        <label for="fotoUpload" class="foto-drop">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#C9A469" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 16V4"/><path d="M7 9l5-5 5 5"/><path d="M4 20h16"/></svg>
+          Selecionar Arquivo
+        </label>
+        <span id="fotoNome" class="file-name"></span>
+        <input id="fotoUpload" type="file" accept="image/*" />
+      </div>
+    </div>
+
+    <div class="acoes">
+      <button id="copySignature" class="btn-primario" type="button">Copiar Assinatura</button>
+      <button id="reset" class="btn-contorno" type="button">Resetar</button>
+    </div>
+  </aside>
+
+  <!-- PRÉ-VISUALIZAÇÃO -->
+  <main class="preview">
+    <div class="preview-inner">
+      <div class="preview-titulo">Pré-visualização</div>
+
+      <div class="janela">
+        <div class="janela-barra">
+          <span class="ponto"></span><span class="ponto"></span><span class="ponto"></span>
+          <span class="titulo">Nova mensagem</span>
+        </div>
+        <div class="janela-campos">
+          <div><b>Para:</b> destinatario@empresa.com.br</div>
+          <div><b>Assunto:</b> Nova Assinatura Fontana</div>
+        </div>
+        <div class="janela-corpo">Corpo do e-mail.<br><br>Att,</div>
+        <div class="janela-assinatura">
 
       <div id="signature" style="width:600px; max-width:600px; box-sizing:border-box; background:#ffffff; padding:4px; font-family:Arial,sans-serif;">
 
@@ -376,13 +472,11 @@ button:hover { background: #163631; }
 
       </div>
 
+        </div>
+      </div>
     </div>
+  </main>
 
-  </div>
-
-</div>
-
-</div>
 </div>
 
 <!-- MODAL DE RECORTE -->
@@ -640,6 +734,7 @@ document.getElementById("copySignature").addEventListener("click", async functio
     }
 
     const canvas = await htmlToImage.toCanvas(document.getElementById("signature"), {
+      skipFonts: true,
       pixelRatio: RESOLUCAO,
       backgroundColor: "#ffffff"
     });
