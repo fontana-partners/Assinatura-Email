@@ -89,7 +89,7 @@ h3 {
 
 label {
   font-weight: bold;
-  color: var(--verde);
+  color: #1F4741;
 }
 
 input, select {
@@ -108,19 +108,50 @@ button {
   padding: 10px 18px;
   border: none;
   border-radius: 4px;
-  background: var(--verde);
+  background: #1F4741;
   color: #fff;
   font-weight: bold;
   cursor: pointer;
   margin-right: 10px;
 }
 
-button:hover {
-  background: #145027;
+button:hover { background: #163631; }
+
+.btn-secondary { background: #C9A469; }
+.btn-secondary:hover { background: #B38F55; }
+.btn-light { background: #1F4741; }
+.btn-light:hover { background: #163631; }
+
+/* Campo de foto personalizado */
+.file-field {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 4px;
 }
 
-.btn-secondary { background: var(--marrom); }
-.btn-light { background: #444; }
+.file-field input[type="file"] { display: none; }
+
+.file-btn {
+  display: inline-block;
+  padding: 8px 14px;
+  border-radius: 4px;
+  background: #1F4741;
+  color: #fff !important;
+  font-weight: bold;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.file-btn:hover { background: #163631; }
+
+.file-name {
+  font-size: 13px;
+  color: #555;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
 
 .email-preview {
   width: 100%;
@@ -208,8 +239,7 @@ button:hover {
 <h1>Gerador de Assinatura de Email – Fontana Partners</h1>
 
 <div class="info-box">
-  <h2>Gere sua assinatura para o e-mail @fontanapartners.com.br</h2>
-  <h3>Preencha suas informações, insira uma foto e salve a assinatura para uso no Outlook.</h3>
+  <h2>Preencha as informações, insira sua foto e gere a assinatura para o e-mail Fontana.</h2>
 </div>
 
 <div class="layout">
@@ -248,10 +278,14 @@ button:hover {
 
   <div class="form-group">
     <label>Foto</label>
-    <input id="fotoUpload" type="file" accept="image/*" />
+    <div class="file-field">
+      <label for="fotoUpload" class="file-btn">Selecionar Arquivo</label>
+      <span id="fotoNome" class="file-name"></span>
+      <input id="fotoUpload" type="file" accept="image/*" />
+    </div>
   </div>
 
-  <button id="copySignature" class="btn-light">Copiar assinatura</button>
+  <button id="copySignature" class="btn-light">Copiar Assinatura</button>
   <button id="reset" class="btn-secondary">Resetar</button>
 
 </div>
@@ -368,6 +402,8 @@ const cargoInput = document.getElementById("cargo");
 const emailInput = document.getElementById("email");
 const telefoneInput = document.getElementById("telefone");
 const fotoUpload = document.getElementById("fotoUpload");
+const fotoNome = document.getElementById("fotoNome");
+let nomeArquivoPendente = "";
 
 const nomePreview = document.getElementById("nomePreview");
 const cargoPreview = document.getElementById("cargoPreview");
@@ -427,6 +463,7 @@ telefoneInput.addEventListener("input", () => {
 fotoUpload.addEventListener("change", function () {
   const file = this.files && this.files[0];
   if (!file) return;
+  nomeArquivoPendente = file.name;
 
   if (!file.type.startsWith("image/")) {
     alert("Selecione um arquivo de imagem válido.");
@@ -517,6 +554,7 @@ document.getElementById("applyCrop").addEventListener("click", function (event) 
     }
 
     fotoImg.src = canvas.toDataURL("image/png");
+    fotoNome.textContent = nomeArquivoPendente;
     fecharRecorte();
   } catch (error) {
     console.error("Erro ao aplicar o recorte:", error);
@@ -637,6 +675,7 @@ document.getElementById("reset").addEventListener("click", function (event) {
   emailInput.value = "";
   telefoneInput.value = "";
   fotoUpload.value = "";
+  fotoNome.textContent = "";
   empresaSelect.value = "partners";
   atualizarLogo();
 
