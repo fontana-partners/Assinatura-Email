@@ -47,11 +47,11 @@ body {
 
 /* ===== PAINEL LATERAL ===== */
 .painel {
-  flex: 0 0 440px;
+  flex: 0 0 clamp(440px, 36vw, 700px);
   max-width: 100%;
   background: var(--verde);
   color: #fff;
-  padding: 48px 48px 40px;
+  padding: clamp(40px, 4vw, 64px) clamp(32px, 3.5vw, 64px) 40px;
   display: flex;
   flex-direction: column;
   gap: 28px;
@@ -69,7 +69,7 @@ body {
   margin: 0;
   font-family: "Cormorant Garamond", Georgia, serif;
   font-weight: 600;
-  font-size: 40px;
+  font-size: clamp(40px, 3vw, 56px);
   line-height: 1.05;
 }
 
@@ -103,7 +103,7 @@ body {
 
 .painel input,
 .painel select {
-  height: 44px;
+  height: 48px;
   width: 100%;
   border-radius: 8px;
   border: 1px solid var(--verde-borda);
@@ -197,10 +197,10 @@ button {
   justify-content: center;
   align-items: center;
   gap: 20px;
-  padding: 48px 24px;
+  padding: 48px clamp(24px, 4vw, 80px);
 }
 
-.preview-inner { width: 100%; max-width: 720px; display: flex; flex-direction: column; gap: 20px; }
+.preview-inner { width: 100%; max-width: 1100px; display: flex; flex-direction: column; gap: 20px; }
 
 .preview-titulo {
   font-size: 12px;
@@ -226,11 +226,11 @@ button {
 }
 
 .janela-barra .ponto { width: 10px; height: 10px; border-radius: 50%; background: #E3DED3; }
-.janela-barra .titulo { margin-left: 12px; font-size: 13px; color: var(--texto-suave); }
+.janela-barra .titulo { margin-left: 12px; font-size: 14px; color: var(--texto-suave); }
 
 .janela-campos {
-  padding: 20px 28px 8px;
-  font-size: 13px;
+  padding: 24px 40px 8px;
+  font-size: 15px;
   color: var(--texto-suave);
   display: flex;
   flex-direction: column;
@@ -241,13 +241,18 @@ button {
 .janela-campos b { color: var(--texto); }
 
 .janela-corpo {
-  padding: 24px 28px 8px;
-  font-size: 14px;
+  padding: 28px 40px 8px;
+  font-size: 16px;
   color: #4A4F4B;
   line-height: 1.6;
 }
 
-.janela-assinatura { padding: 12px 28px 36px; overflow-x: auto; }
+.janela-assinatura { padding: 16px 40px 44px; overflow: hidden; }
+
+/* A assinatura é desenhada com 600px (tamanho real da imagem) e só
+   AMPLIADA na tela; a imagem copiada não muda. */
+.assinatura-area { position: relative; }
+.assinatura-escala { transform-origin: top left; width: 600px; }
 
 .placeholder { color: var(--ph) !important; }
 
@@ -317,6 +322,8 @@ button {
   .painel { flex-basis: 100%; padding: 32px 20px; }
   .form-row { grid-template-columns: 1fr; }
   .preview { padding: 32px 16px; }
+  .janela-campos, .janela-corpo { padding-left: 20px; padding-right: 20px; }
+  .janela-assinatura { padding: 12px 20px 28px; }
 }
 </style>
 </head>
@@ -397,6 +404,8 @@ button {
         </div>
         <div class="janela-corpo">Corpo do e-mail.<br><br>Att,</div>
         <div class="janela-assinatura">
+        <div class="assinatura-area" id="assinaturaArea">
+        <div class="assinatura-escala" id="assinaturaEscala">
 
       <div id="signature" style="width:600px; max-width:600px; box-sizing:border-box; background:#ffffff; padding:4px; font-family:Arial,sans-serif;">
 
@@ -472,6 +481,8 @@ button {
 
       </div>
 
+        </div>
+        </div>
         </div>
       </div>
     </div>
@@ -655,6 +666,27 @@ document.getElementById("applyCrop").addEventListener("click", function (event) 
     alert("Não foi possível salvar o recorte. Tente outra imagem.");
   }
 });
+
+// ===== Ampliação da pré-visualização =====
+// Amplia a assinatura na tela para ocupar a largura disponível (até 1,6x),
+// sem alterar o tamanho da imagem copiada.
+const assinaturaArea = document.getElementById("assinaturaArea");
+const assinaturaEscala = document.getElementById("assinaturaEscala");
+
+function ajustarEscalaPreview() {
+  const disponivel = assinaturaArea.clientWidth;
+  const escala = Math.max(0.5, Math.min(1.6, disponivel / 600));
+  assinaturaEscala.style.transform = "scale(" + escala + ")";
+  assinaturaArea.style.height = (assinaturaEscala.offsetHeight * escala) + "px";
+}
+
+if (window.ResizeObserver) {
+  new ResizeObserver(ajustarEscalaPreview).observe(assinaturaArea);
+} else {
+  window.addEventListener("resize", ajustarEscalaPreview);
+}
+window.addEventListener("load", ajustarEscalaPreview);
+ajustarEscalaPreview();
 
 // ===== Logos por empresa =====
 // Para incluir uma empresa nova: adicione uma linha aqui e uma <option> no campo "Empresa".
